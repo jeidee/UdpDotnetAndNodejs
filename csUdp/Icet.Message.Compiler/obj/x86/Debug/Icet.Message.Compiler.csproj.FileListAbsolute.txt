@@ -1,0 +1,5 @@
+D:\Projects\csUdp\Icet.Message.Compiler\bin\Debug\Icet.Message.Compiler.exe
+D:\Projects\csUdp\Icet.Message.Compiler\bin\Debug\Icet.Message.Compiler.pdb
+D:\Projects\csUdp\Icet.Message.Compiler\obj\x86\Debug\Icet.Message.Compiler.exe
+D:\Projects\csUdp\Icet.Message.Compiler\obj\x86\Debug\Icet.Message.Compiler.pdb
+D:\Projects\csUdp\Icet.Message.Compiler\bin\Debug\C2S.xml

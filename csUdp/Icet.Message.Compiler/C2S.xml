@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Protocol name="C2S" number="1" version="100">
+  <Import name = "System" lang ="cs"/>
+  <Import name = "System.Collections.Generic" lang ="cs"/>
+  <Import name = "System.Linq" lang ="cs"/>
+  <Import name = "System.Text" lang ="cs"/>
+  <Import name = "Icet.Message" lang ="cs"/>
+
+  <Flag name ="Fail" value="0" />
+  <Flag name ="Success" value="1" />
+
+  <Message name="Heartbeat" id="100">
+    <Data type="String" name="uid" />
+  </Message>
+
+</Protocol>

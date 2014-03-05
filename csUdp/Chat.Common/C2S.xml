@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Protocol name="C2S" number="1" version="100">
+  <Import lang="cs" name = "System" />
+  <Import lang="cs" name = "System.Collections.Generic" />
+  <Import lang="cs" name = "System.Linq" />
+  <Import lang="cs" name = "System.Text" />
+  <Import lang="cs" name = "Icet.Message" />
+  <Import lang="cs" name = "System.Net.Sockets" />
+  <Import lang="cs" name = "Newtonsoft.Json" />
+  <Import lang="cs" name = "Chat.Common" />
+  <Import lang="js" name = "var entity = require('./entity.js');" />
+  <Import lang="js" name = "var moment = require('moment');" />
+
+  <Flag name ="Fail" value="0" />
+  <Flag name ="Success" value="1" />
+
+  <Message name="Heartbeat" id="100">
+    <Data type="String" name="uid" />
+  </Message>
+
+  <Message name="ReqChat">
+    <Data type="String" name="uid" />
+    <Data type="String" name="group" />
+    <Data type="String" name="chat" />
+  </Message>
+
+  <Message name="ReqLogin">
+    <Data type="String" name="uid" />
+  </Message>
+
+  <Message name="ReqLogout">
+    <Data type="String" name="uid" />
+  </Message>
+
+  <Message name="ReqJoin">
+    <Data type="String" name="uid" />
+    <Data type="String" name="group" />
+  </Message>
+
+  <Message name="ReqLeave">
+    <Data type="String" name="uid" />
+    <Data type="String" name="group" />
+  </Message>
+
+  <Message name="ReqUserList">
+    <Data type="String" name="uid" />
+    <Data type="String" name="group" />
+  </Message>
+
+</Protocol>

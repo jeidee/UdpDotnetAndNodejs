@@ -1,0 +1,10 @@
+D:\Projects\csUdp\Chat.Common\obj\x86\Debug\Chat.Common.csprojResolveAssemblyReference.cache
+D:\Projects\csUdp\Chat.Common\bin\Debug\Chat.Common.dll
+D:\Projects\csUdp\Chat.Common\bin\Debug\Chat.Common.pdb
+D:\Projects\csUdp\Chat.Common\bin\Debug\Icet.Message.dll
+D:\Projects\csUdp\Chat.Common\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\csUdp\Chat.Common\bin\Debug\Icet.Message.pdb
+D:\Projects\csUdp\Chat.Common\bin\Debug\Newtonsoft.Json.pdb
+D:\Projects\csUdp\Chat.Common\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\csUdp\Chat.Common\obj\x86\Debug\Chat.Common.dll
+D:\Projects\csUdp\Chat.Common\obj\x86\Debug\Chat.Common.pdb

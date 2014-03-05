@@ -1,0 +1,12 @@
+D:\Projects\csUdp\csUdp\bin\Debug\csUdp.exe
+D:\Projects\csUdp\csUdp\bin\Debug\csUdp.pdb
+D:\Projects\csUdp\csUdp\obj\x86\Debug\csUdp.exe
+D:\Projects\csUdp\csUdp\obj\x86\Debug\csUdp.pdb
+D:\Projects\csUdp\csUdp\obj\x86\Debug\csUdp.csprojResolveAssemblyReference.cache
+D:\Projects\csUdp\csUdp\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\csUdp\csUdp\bin\Debug\Newtonsoft.Json.pdb
+D:\Projects\csUdp\csUdp\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\csUdp\csUdp\bin\Debug\Chat.Common.dll
+D:\Projects\csUdp\csUdp\bin\Debug\Icet.Message.dll
+D:\Projects\csUdp\csUdp\bin\Debug\Chat.Common.pdb
+D:\Projects\csUdp\csUdp\bin\Debug\Icet.Message.pdb

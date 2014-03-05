@@ -1,0 +1,8 @@
+D:\Projects\csUdp\Icet.Message\bin\Debug\Icet.Message.dll
+D:\Projects\csUdp\Icet.Message\bin\Debug\Icet.Message.pdb
+D:\Projects\csUdp\Icet.Message\obj\Debug\Icet.Message.dll
+D:\Projects\csUdp\Icet.Message\obj\Debug\Icet.Message.pdb
+D:\Projects\csUdp\Icet.Message\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\csUdp\Icet.Message\bin\Debug\Newtonsoft.Json.pdb
+D:\Projects\csUdp\Icet.Message\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\csUdp\Icet.Message\obj\Debug\Icet.Message.csprojResolveAssemblyReference.cache
