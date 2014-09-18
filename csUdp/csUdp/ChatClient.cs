@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,126 +10,114 @@ namespace csUdp
 {
     class ChatClient
     {
-        const int kHeartbeatInterval = 500;
+        const int kHeartbeatInterval = 1000;   // 10초
 
-        MessageClient net_client = new MessageClient();
-        C2S.Proxy c2s_proxy = new C2S.Proxy();
-        S2C.Stub s2c_stub = new S2C.Stub();
+        MessageClient netClient = new MessageClient();
+        C2S.Proxy c2sProxy = new C2S.Proxy();
+        S2C.Stub s2cStub = new S2C.Stub();
 
         Session session = new Session();
 
-        Timer heartbeat_timer;
+        Timer heartbeatTimer;
 
         public bool IsLogin()
         {
-            return session.is_login;
+            return session.isLogin;
         }
 
         public void Init()
         {
-            net_client.AttachStub(s2c_stub);
-            net_client.AttachProxy(c2s_proxy);
+            netClient.AttachStub(s2cStub);
+            netClient.AttachProxy(c2sProxy);
 
-            net_client.Init(false);
+            netClient.Init(false);
 
-            heartbeat_timer = new Timer(e =>
-            {
-                if (session.is_login && net_client != null && session != null && session.user != null && session.user.uid != "")
-                {
-                    //Console.WriteLine("Send Heartbeat...[ThreadID:{0}]", Thread.CurrentThread.ManagedThreadId);
-                    c2s_proxy.Heartbeat(net_client.connection, session.user.uid);
-                }
-
-            }, null, 0, kHeartbeatInterval);
-
-            s2c_stub.OnNotifyJoin += new S2C.Stub.NotifyJoinDelegate(s2c_stub_OnNotifyJoin);
-            s2c_stub.OnNotifyLeave += new S2C.Stub.NotifyLeaveDelegate(s2c_stub_OnNotifyLeave);
-            s2c_stub.OnResJoin += new S2C.Stub.ResJoinDelegate(s2c_stub_OnResJoin);
-            s2c_stub.OnResLeave += new S2C.Stub.ResLeaveDelegate(s2c_stub_OnResLeave);
-            s2c_stub.OnResLogin += new S2C.Stub.ResLoginDelegate(s2c_stub_OnResLogin);
-            s2c_stub.OnResLogout += new S2C.Stub.ResLogoutDelegate(s2c_stub_OnResLogout);
-            s2c_stub.OnResUserList += new S2C.Stub.ResUserListDelegate(s2c_stub_OnResUserList);
-
-            //s2c_stub.OnResLogin += new S2C.Stub.ResLoginDelegate(s2c_stub_OnResLogin);
-            //s2c_stub.OnResSend += new S2C.Stub.ResSendDelegate(s2c_stub_OnResSend);
-            //s2c_stub.OnResSendAll += new S2C.Stub.ResSendAllDelegate(s2c_stub_OnResSendAll);
-            //s2c_stub.OnNotifyLogin += new S2C.Stub.NotifyLoginDelegate(s2c_stub_OnNotifyLogin);
-            //s2c_stub.OnNotifyLogout += new S2C.Stub.NotifyLogoutDelegate(s2c_stub_OnNotifyLogout);
-            //s2c_stub.OnNotifySend += new S2C.Stub.NotifySendDelegate(s2c_stub_OnNotifySend);
-            //s2c_stub.OnNotifySendAll += new S2C.Stub.NotifySendAllDelegate(s2c_stub_OnNotifySendAll);
+            s2cStub.OnNotifyJoin += OnNotifyJoin;
+            s2cStub.OnNotifyLeave += OnNotifyLeave;
+            s2cStub.OnResJoin += OnResJoin;
+            s2cStub.OnResLeave += OnResLeave;
+            s2cStub.OnResLogin += OnResLogin;
+            s2cStub.OnResLogout += OnResLogout;
+            s2cStub.OnResUserList += OnResUserList;
+            s2cStub.OnNotifyChat += OnNotifyChat;
         }
 
-        void s2c_stub_OnResLeave(string message, S2C.Message.ResLeave data)
+        void OnNotifyChat(string message, S2C.Message.NotifyChat data)
         {
-            Console.WriteLine("[res_leave] Is ok? = {0}, Error Message = {1}", data.is_ok, data.error_msg);
+            Console.WriteLine("[{0}] {1}", data.uid, data.chat);
         }
 
-        void s2c_stub_OnResUserList(string message, S2C.Message.ResUserList data)
+        void OnResLeave(string message, S2C.Message.ResLeave data)
         {
-            session.group.user_list.Clear();
-            foreach (var key in data.user_list.Keys)
+            Console.WriteLine("[OnResLeave] Is ok? = {0}, Error Message = {1}", data.isOk, data.errorMessage);
+        }
+
+        void OnResUserList(string message, S2C.Message.ResUserList data)
+        {
+            session.group.userList.Clear();
+            foreach (var key in data.userList.Keys)
             {
-                session.group.user_list[key] = data.user_list[key];
+                session.group.userList[key] = data.userList[key];
             }
         }
 
-        void s2c_stub_OnResLogout(string message, S2C.Message.ResLogout data)
+        void OnResLogout(string message, S2C.Message.ResLogout data)
         {
-            session.is_login = false;
-            Console.WriteLine("[res_logout] Is ok? = {0}, Error Message = {1}", data.is_ok, data.error_msg);
+            session.isLogin = false;
+            Console.WriteLine("[OnResLogout] Is ok? = {0}, Error Message = {1}", data.isOk, data.errorMessage);
         }
 
-        void s2c_stub_OnNotifyLeave(string message, S2C.Message.NotifyLeave data)
+        void OnNotifyLeave(string message, S2C.Message.NotifyLeave data)
         {
-            if (session.group.user_list.ContainsKey(data.uid))
+            if (session.group.userList.ContainsKey(data.uid))
             {
-                session.group.user_list.Remove(data.uid);
+                session.group.userList.Remove(data.uid);
             }
             else
             {
-                Console.WriteLine("[noti_leave] Not exists user[{0}].", data.uid);
+                Console.WriteLine("[OnNotifyLeave] Not exists user[{0}].", data.uid);
             }
 
         }
 
-        void s2c_stub_OnNotifyJoin(string message, S2C.Message.NotifyJoin data)
+        void OnNotifyJoin(string message, S2C.Message.NotifyJoin data)
         {
-            if (!session.group.user_list.ContainsKey(data.uid))
+            if (!session.group.userList.ContainsKey(data.uid))
             {
-                User new_user = new User();
-                new_user.uid = data.uid;
-                new_user.public_ip = data.public_ip;
-                new_user.public_port = data.public_port;
+                User newUser = new User();
+                newUser.uid = data.uid;
+                newUser.publicIp = data.publicIp;
+                newUser.publicPort = data.publicPort;
 
-                session.group.user_list[data.uid] = new_user;
+                session.group.userList[data.uid] = newUser;
             }
             else
             {
-                Console.WriteLine("[noti_join] Already added user[{0}].", data.uid);
+                Console.WriteLine("[OnNotifyJoin] Already added user[{0}].", data.uid);
             }
         }
 
-        void s2c_stub_OnResLogin(string message, S2C.Message.ResLogin data)
+        void OnResLogin(string message, S2C.Message.ResLogin data)
         {
             session.user.uid = data.uid;
 
-            if (data.is_ok)
+            if (data.isOk)
             {
-                session.user.public_ip = data.public_ip;
-                session.user.public_port = data.public_port;
-                session.is_login = true;
+                session.user.publicIp = data.publicIp;
+                session.user.publicPort = data.publicPort;
+                session.isLogin = true;
             }
             else
             {
-                session.is_login = false;
+                session.isLogin = false;
             }
-            Console.WriteLine("[res_login] Is ok? = {0}, Error Message = {1}", data.is_ok, data.error_msg);
+            Console.WriteLine("[OnResLogin] Is ok? = {0}, Error Message = {1}", data.isOk, data.errorMessage);
 
         }
 
-        void s2c_stub_OnResJoin(string message, S2C.Message.ResJoin data)
+        void OnResJoin(string message, S2C.Message.ResJoin data)
         {
-            if (!data.is_ok)
+            if (!data.isOk)
             {
                 session.user.group = "";
             }
@@ -137,40 +125,40 @@ namespace csUdp
             {
                 session.group.name = session.user.group;
             }
-            Console.WriteLine("[res_join] Is ok? = {0}, Error Message = {1}", data.is_ok, data.error_msg);
+            Console.WriteLine("[OnResJoin] Is ok? = {0}, Error Message = {1}", data.isOk, data.errorMessage);
         }
 
-        public void Connect(string server_ip, int server_port)
+        public void Connect(string serverIp, int serverPort)
         {
-            net_client.Connect(server_ip, server_port);
+            netClient.Connect(serverIp, serverPort);
             Thread.Sleep(1000);
 
-            System.Timers.Timer heartbeat_timer = new System.Timers.Timer(1000);
-            heartbeat_timer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
+            System.Timers.Timer heartbeatTimer = new System.Timers.Timer(kHeartbeatInterval);
+            heartbeatTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
             {
-                if (session.is_login && session.user.uid != string.Empty)
+                if (session.isLogin && session.user.uid != string.Empty)
                 {
                     Heartbeat();
                 }
             });
-            heartbeat_timer.Start();
+            heartbeatTimer.Start();
         }
 
         public void Close()
         {
             session.Clear();
-            net_client.Stop();
+            netClient.Stop();
         }
 
         public void Chat(string chat)
         {
-            if (!session.is_login)
+            if (!session.isLogin)
             {
                 Console.WriteLine("You are logged out.");
                 return;
             }
 
-            if (!c2s_proxy.ReqChat(net_client.connection, session.user.uid, session.user.group, chat))
+            if (!c2sProxy.ReqChat(netClient.connection, session.user.uid, session.user.group, chat))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -178,7 +166,7 @@ namespace csUdp
 
         public void Heartbeat()
         {
-            if (!c2s_proxy.Heartbeat(net_client.connection, session.user.uid))
+            if (!c2sProxy.Heartbeat(netClient.connection, session.user.uid))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -186,14 +174,15 @@ namespace csUdp
 
         public void Login(string id)
         {
-            if (session.is_login)
+            if (session.isLogin)
             {
                 Console.WriteLine("You are already logged in.");
                 return;
             }
 
             session.user.uid = id;
-            if (!c2s_proxy.ReqLogin(net_client.connection, id))
+            string dummy = new string('a', 10204);
+            if (!c2sProxy.ReqLogin(netClient.connection, session.user.uid, dummy))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -201,13 +190,13 @@ namespace csUdp
 
         public void Logout()
         {
-            if (!session.is_login)
+            if (!session.isLogin)
             {
                 Console.WriteLine("You are already logged out.");
                 return;
             }
 
-            if (!c2s_proxy.ReqLogout(net_client.connection, session.user.uid))
+            if (!c2sProxy.ReqLogout(netClient.connection, session.user.uid))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -217,7 +206,7 @@ namespace csUdp
 
         public void Join(string group)
         {
-            if (!session.is_login)
+            if (!session.isLogin)
             {
                 Console.WriteLine("You are logged out.");
                 return;
@@ -231,7 +220,7 @@ namespace csUdp
 
             session.user.group = group;
 
-            if (!c2s_proxy.ReqJoin(net_client.connection, session.user.uid, group))
+            if (!c2sProxy.ReqJoin(netClient.connection, session.user.uid, group))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -239,7 +228,7 @@ namespace csUdp
 
         public void Leave()
         {
-            if (!session.is_login)
+            if (!session.isLogin)
             {
                 Console.WriteLine("You are logged out.");
                 return;
@@ -251,7 +240,7 @@ namespace csUdp
                 return;
             }
 
-            if (!c2s_proxy.ReqLeave(net_client.connection, session.user.uid, session.user.group))
+            if (!c2sProxy.ReqLeave(netClient.connection, session.user.uid, session.user.group))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }
@@ -259,7 +248,7 @@ namespace csUdp
 
         public void UserList()
         {
-            if (!session.is_login)
+            if (!session.isLogin)
             {
                 Console.WriteLine("You are logged out.");
                 return;
@@ -271,7 +260,7 @@ namespace csUdp
                 return;
             }
 
-            if (!c2s_proxy.ReqUserList(net_client.connection, session.user.uid, session.user.group))
+            if (!c2sProxy.ReqUserList(netClient.connection, session.user.uid, session.user.group))
             {
                 Console.WriteLine("Request was refused. Check your connections.");
             }

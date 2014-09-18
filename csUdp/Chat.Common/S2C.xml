@@ -8,7 +8,7 @@
   <Import lang="cs" name = "System.Net.Sockets" />
   <Import lang="cs" name = "Newtonsoft.Json" />
   <Import lang="cs" name = "Chat.Common" />
-  <Import lang="js" name = "var entity = require('./entity.js');" />
+  <Import lang="js" name = "var entity = require('./chat.entity.js');" />
   <Import lang="js" name = "var moment = require('moment');" />
 
   <Flag name ="Fail" value="0" />
@@ -16,35 +16,36 @@
 
   <Message name="ResLogin" id="100">
     <Data type="String" name="uid" />
-    <Data type="bool" name="is_ok" />
-    <Data type="String" name="error_msg" />
-    <Data type="String" name="public_ip" />
-    <Data type="ushort" name="public_port" />
+    <Data type="bool" name="isOk" />
+    <Data type="String" name="errorMessage" />
+    <Data type="String" name="publicIp" />
+    <Data type="ushort" name="publicPort" />
+    <Data type="String" name="dummy" />
   </Message>
 
   <Message name="ResLogout">
     <Data type="String" name="uid" />
-    <Data type="bool" name="is_ok" />
-    <Data type="String" name="error_msg" />
+    <Data type="bool" name="isOk" />
+    <Data type="String" name="errorMessage" />
   </Message>
 
   <Message name="ResJoin">
     <Data type="String" name="uid" />
-    <Data type="bool" name="is_ok" />
-    <Data type="String" name="error_msg" />
+    <Data type="bool" name="isOk" />
+    <Data type="String" name="errorMessage" />
   </Message>
 
   <Message name="NotifyJoin">
     <Data type="String" name="uid" />
     <Data type="String" name="group" />
-    <Data type="String" name="public_ip" />
-    <Data type="ushort" name="public_port" />
+    <Data type="String" name="publicIp" />
+    <Data type="ushort" name="publicPort" />
   </Message>
 
   <Message name="ResLeave">
     <Data type="String" name="uid" />
-    <Data type="bool" name="is_ok" />
-    <Data type="String" name="error_msg" />
+    <Data type="bool" name="isOk" />
+    <Data type="String" name="errorMessage" />
   </Message>
 
   <Message name="NotifyLeave">
@@ -54,7 +55,17 @@
 
   <Message name="ResUserList">
     <Data type="String" name="uid" />
-    <Data type="Dictionary" generic="string, User" name="user_list" />
+    <Data type="Dictionary" generic="string, User" name="userList" />
   </Message>
 
+  <Message name="ResChat">
+    <Data type="String" name="uid" />
+    <Data type="bool" name="isOk" />
+    <Data type="String" name="errorMessage" />
+  </Message>
+
+  <Message name="NotifyChat">
+    <Data type="String" name="uid" />
+    <Data type="String" name="chat" />
+  </Message>
 </Protocol>

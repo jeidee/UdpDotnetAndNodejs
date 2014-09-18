@@ -8,7 +8,7 @@
   <Import lang="cs" name = "System.Net.Sockets" />
   <Import lang="cs" name = "Newtonsoft.Json" />
   <Import lang="cs" name = "Chat.Common" />
-  <Import lang="js" name = "var entity = require('./entity.js');" />
+  <Import lang="js" name = "var entity = require('./chat.entity.js');" />
   <Import lang="js" name = "var moment = require('moment');" />
 
   <Flag name ="Fail" value="0" />
@@ -18,14 +18,9 @@
     <Data type="String" name="uid" />
   </Message>
 
-  <Message name="ReqChat">
-    <Data type="String" name="uid" />
-    <Data type="String" name="group" />
-    <Data type="String" name="chat" />
-  </Message>
-
   <Message name="ReqLogin">
     <Data type="String" name="uid" />
+    <Data type="String" name="dummy" />
   </Message>
 
   <Message name="ReqLogout">
@@ -45,6 +40,12 @@
   <Message name="ReqUserList">
     <Data type="String" name="uid" />
     <Data type="String" name="group" />
+  </Message>
+  
+  <Message name="ReqChat">
+    <Data type="String" name="uid" />
+    <Data type="String" name="group" />
+    <Data type="String" name="chat" />
   </Message>
 
 </Protocol>

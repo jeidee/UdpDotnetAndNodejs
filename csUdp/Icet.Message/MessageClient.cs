@@ -10,20 +10,29 @@ namespace Icet.Message
 {
     public class MessageClient
     {
+        const int PACKET_HEADER_SIZE = 4;
+
         class MessageHeader
         {
             public string id;
         }
 
-        UdpClient net_client;
-        public UdpClient connection
+        List<byte> receiveBuffer = new List<byte>();
+        int packetSize = -1;
+
+        Socket netClient;
+        public Socket connection
         {
-            get { return net_client; }
+            get { return netClient; }
         }
-        bool is_running = false;
-        Dictionary<string, RpcStubInfo> stub_handlers = new Dictionary<string, RpcStubInfo>();
-        List<MessageStub> stub_list = new List<MessageStub>();
-        List<MessageProxy> proxy_list = new List<MessageProxy>();
+        bool isRunning = false;
+        public bool IsRunning
+        {
+            get { return isRunning;  }
+        }
+        Dictionary<string, RpcStubInfo> stubHandlers = new Dictionary<string, RpcStubInfo>();
+        List<MessageStub> stubList = new List<MessageStub>();
+        List<MessageProxy> proxyList = new List<MessageProxy>();
 
         public MessageClient()
         {
@@ -32,9 +41,9 @@ namespace Icet.Message
 
         public bool AttachStub(MessageStub stub)
         {
-            if (stub.AttachRpcStub(stub_handlers))
+            if (stub.AttachRpcStub(stubHandlers))
             {
-                stub_list.Add(stub);
+                stubList.Add(stub);
                 return true;
             }
 
@@ -44,9 +53,9 @@ namespace Icet.Message
 
         public bool AttachProxy(MessageProxy proxy)
         {
-            if (proxy_list.Find(e => e == proxy) == null)
+            if (proxyList.Find(e => e == proxy) == null)
             {
-                proxy_list.Add(proxy);
+                proxyList.Add(proxy);
                 return true;
             }
 
@@ -54,9 +63,13 @@ namespace Icet.Message
         }
 
 
-        public void Init(bool use_multi_thread)
+        public void Init(bool useMultiThread)
         {
-            net_client = new UdpClient();
+            netClient = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
+
+            netClient.SendBufferSize = 10;
         }
 
 
@@ -64,69 +77,87 @@ namespace Icet.Message
         {
             Console.WriteLine("Client start...");
 
-            IPEndPoint remote_ep = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
-            net_client.Connect(remote_ep);
+            var ar = new SocketAsyncEventArgs();
+            IPEndPoint remoteEp = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
+            ar.RemoteEndPoint = remoteEp;
+            ar.Completed += OnConnectCompleted;
 
-            is_running = true;
-            AsyncCallback rcv_callback = null;
-            rcv_callback = new AsyncCallback((ar) =>
+            netClient.ConnectAsync(ar);
+        }
+
+        void OnConnectCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            isRunning = true;
+
+            var ar = new SocketAsyncEventArgs();
+            ar.SetBuffer(new byte[1024], 0, 1024);
+            ar.UserToken = netClient;
+            ar.Completed += OnReceiveCompleted;
+            netClient.ReceiveAsync(ar);
+        }
+
+        void OnReceiveCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            var clientSocket = (Socket)sender;
+            if (clientSocket.Connected && e.BytesTransferred > 0)
             {
-                if (!is_running) return;
+                if (!isRunning) return;
 
-                string message = "";
+                receiveBuffer.AddRange(e.Buffer);
+                receiveBuffer.RemoveRange(e.BytesTransferred, e.Buffer.Length - e.BytesTransferred);
 
-                try
+                if (receiveBuffer.Count > PACKET_HEADER_SIZE &&
+                    packetSize == -1)
                 {
-                    byte[] receive_data = net_client.EndReceive(ar, ref remote_ep);
-                    message = UTF8Encoding.UTF8.GetString(receive_data, 0, receive_data.Length);
+                    packetSize = BitConverter.ToInt32(receiveBuffer.ToArray(), 0) - PACKET_HEADER_SIZE;
+                    receiveBuffer.RemoveRange(0, PACKET_HEADER_SIZE);
                 }
-                catch (SocketException se)
+
+                if (receiveBuffer.Count >= packetSize)
                 {
-                    //session.Clear();
-                    if (se.SocketErrorCode == SocketError.ConnectionReset)
+                    byte[] buffer = new byte[packetSize];
+                    receiveBuffer.CopyTo(0, buffer, 0, packetSize);
+                    receiveBuffer.RemoveRange(0, packetSize);
+                    packetSize = -1;
+
+                    string message = UTF8Encoding.UTF8.GetString(buffer);
+
+                    MessageHeader msgobj = JsonConvert.DeserializeObject<MessageHeader>(message);
+                    if (msgobj == null)
                     {
-                        Console.WriteLine("Disconnected from server.");
+                        Console.WriteLine("Invalid message. {0}", message);
                     }
                     else
                     {
-                        Console.WriteLine(se.Message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //session.Clear();
-                    Console.WriteLine(ex.Message);
-                    return;
-                }
+                        if (!stubHandlers.ContainsKey(msgobj.id))
+                        {
+                            Console.WriteLine("[CLIENT]Unknown message id {0}", msgobj.id);
+                            return;
+                        }
 
-                MessageHeader msgobj = JsonConvert.DeserializeObject<MessageHeader>(message);
-                if (msgobj == null)
-                {
-                    Console.WriteLine("Invalid message. {0}", message);
-                }
-                else
-                {
-                    if (!stub_handlers.ContainsKey(msgobj.id))
-                    {
-                        Console.WriteLine("[CLIENT]Unknown message id {0}", msgobj.id);
-                        return;
+                        stubHandlers[msgobj.id].Call(message);
                     }
 
-                    stub_handlers[msgobj.id].Call(message);
+                    Console.WriteLine("Received message is '{0}'.", message);
                 }
 
-                Console.WriteLine("Received message is '{0}'.", message);
-                net_client.BeginReceive(rcv_callback, ar);
-            });
-
-            net_client.BeginReceive(rcv_callback, null);
-
+                var ar = new SocketAsyncEventArgs();
+                ar.SetBuffer(new byte[1024], 0, 1024);
+                ar.UserToken = netClient;
+                ar.Completed += OnReceiveCompleted;
+                netClient.ReceiveAsync(ar);
+            }
         }
 
 
         public void Stop()
         {
-            is_running = false;
+            isRunning = false;
+        }
+
+        public void Close(int timeoutSec)
+        {
+            netClient.Close(timeoutSec);
         }
     }
 }

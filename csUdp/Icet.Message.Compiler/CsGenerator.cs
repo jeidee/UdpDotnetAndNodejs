@@ -9,21 +9,21 @@ namespace Icet.Message.Compiler
     class CsGenerator
     {
         public void Generate(Protocol protocol,
-            string output_path)
+            string outputPath)
         {
-            GenerateMessageCode(protocol, output_path);
-            GenerateProxyCode(protocol, output_path);
-            GenerateStubCode(protocol, output_path);
+            GenerateMessageCode(protocol, outputPath);
+            GenerateProxyCode(protocol, outputPath);
+            GenerateStubCode(protocol, outputPath);
         }
 
 
         private void GenerateMessageCode(Protocol protocol, string path)
         {
-            string output_file = String.Format("{0}/{1}.Message.cs",
+            string outputFile = String.Format("{0}/{1}.Message.cs",
                 path, protocol.name);
-            using (StreamWriter sw = new StreamWriter(output_file))
+            using (StreamWriter sw = new StreamWriter(outputFile))
             {
-                foreach (Import import in protocol.import_list)
+                foreach (Import import in protocol.importList)
                 {
                     if (import.lang != "cs") continue;
                     sw.WriteLine("using {0};", import.name);
@@ -41,19 +41,19 @@ namespace Icet.Message.Compiler
                 /// FLAG
                 sw.WriteLine("\t\tpublic enum Flag");
                 sw.WriteLine("\t\t{");
-                foreach (Flag flag in protocol.flag_list)
+                foreach (Flag flag in protocol.flagList)
                 {
                     sw.WriteLine("\t\t\tkFlag{0} = {1},", flag.name, flag.value);
                 }
                 sw.WriteLine("\t\t};");
                 sw.WriteLine("");
 
-                foreach (Message message in protocol.message_list)
+                foreach (Message message in protocol.messageList)
                 {
                     sw.WriteLine("\t\tpublic struct {0}", message.name);
                     sw.WriteLine("\t\t{");
                     sw.WriteLine("\t\t\tpublic string id;");
-                    foreach (Data data in message.data_list)
+                    foreach (Data data in message.dataList)
                     {
                         if (data.generic != "")
                             sw.WriteLine("\t\t\tpublic {0}<{1}> {2};\t{3}",
@@ -75,11 +75,11 @@ namespace Icet.Message.Compiler
 
         private void GenerateProxyCode(Protocol protocol, string path)
         {
-            string output_file = String.Format("{0}/{1}.Proxy.cs",
+            string outputFile = String.Format("{0}/{1}.Proxy.cs",
                 path, protocol.name);
-            using (StreamWriter sw = new StreamWriter(output_file))
+            using (StreamWriter sw = new StreamWriter(outputFile))
             {
-                foreach (Import import in protocol.import_list)
+                foreach (Import import in protocol.importList)
                 {
                     if (import.lang != "cs") continue;
                     sw.WriteLine("using {0};", import.name);
@@ -94,29 +94,29 @@ namespace Icet.Message.Compiler
                     protocol.version);
                 sw.WriteLine();
 
-                foreach (Message message in protocol.message_list)
+                foreach (Message message in protocol.messageList)
                 {
-                    string param_list = "UdpClient client, ";
-                    foreach (Data data in message.data_list)
+                    string paramList = "Socket client, ";
+                    foreach (Data data in message.dataList)
                     {
                         if (data.generic != "")
                         {
-                            param_list += string.Format("{0}<{1}> {2}, ",
+                            paramList += string.Format("{0}<{1}> {2}, ",
                                 data.type, data.generic, data.name);
                         }
                         else
                         {
-                            param_list += string.Format("{0} {1}, ",
+                            paramList += string.Format("{0} {1}, ",
                                 data.type, data.name);
                         }
                     }
-                    if (param_list.Length > 2)
+                    if (paramList.Length > 2)
                     {
-                        param_list = param_list.Substring(0, param_list.Length - 2);
+                        paramList = paramList.Substring(0, paramList.Length - 2);
                     }
 
 
-                    sw.WriteLine("\t\tpublic bool {0}({1})", message.name, param_list);
+                    sw.WriteLine("\t\tpublic bool {0}({1})", message.name, paramList);
                     sw.WriteLine("\t\t{");
 
                     sw.WriteLine("\t\t\tif (client == null) return false;");
@@ -124,14 +124,19 @@ namespace Icet.Message.Compiler
                     sw.WriteLine("\t\t\tMessage.{0} msg = new Message.{0}();", message.name);
                     sw.WriteLine("\t\t\tmsg.id = \"{0}\";", message.id);
 
-                    foreach (Data data in message.data_list)
+                    foreach (Data data in message.dataList)
                     {
                         sw.WriteLine("\t\t\tmsg.{0} = {0};", data.name);
                     }
-
+                    
                     sw.WriteLine("\t\t\tstring jsonmsg = JsonConvert.SerializeObject(msg);");
                     sw.WriteLine("\t\t\tbyte[] data = UTF8Encoding.UTF8.GetBytes(jsonmsg);");
-                    sw.WriteLine("\t\t\tclient.Send(data, data.Length);");
+                    sw.WriteLine("\t\t\tvar dataArray = new List<byte>();");
+                    sw.WriteLine("\t\t\tdataArray.AddRange(data);");
+                    sw.WriteLine("\t\t\tdataArray.InsertRange(0, BitConverter.GetBytes((int)(data.Length + 4)));");
+                    sw.WriteLine("\t\t\tif (!client.Connected) return false;");
+                    sw.WriteLine("\t\t\tclient.Send(dataArray.ToArray());");
+                    //sw.WriteLine("\t\t\tclient.Send(data);");
                     sw.WriteLine("\t\t\treturn true;");
 
                     sw.WriteLine("\t\t}");
@@ -145,11 +150,11 @@ namespace Icet.Message.Compiler
 
         private void GenerateStubCode(Protocol protocol, string path)
         {
-            string output_file = String.Format("{0}/{1}.Stub.cs",
+            string outputFile = String.Format("{0}/{1}.Stub.cs",
                 path, protocol.name);
-            using (StreamWriter sw = new StreamWriter(output_file))
+            using (StreamWriter sw = new StreamWriter(outputFile))
             {
-                foreach (Import import in protocol.import_list)
+                foreach (Import import in protocol.importList)
                 {
                     if (import.lang != "cs") continue;
                     sw.WriteLine("using {0};", import.name);
@@ -164,7 +169,7 @@ namespace Icet.Message.Compiler
                     protocol.version);
                 sw.WriteLine();
 
-                foreach (Message message in protocol.message_list)
+                foreach (Message message in protocol.messageList)
                 {
                     sw.WriteLine("\t\tpublic delegate void {1}Delegate(string message, {0}.Message.{1} data);",
                         protocol.name, message.name);

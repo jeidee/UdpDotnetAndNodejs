@@ -23,17 +23,11 @@ namespace C2S
 			public string id;
 			public String uid;	
 		}
-		public struct ReqChat
-		{
-			public string id;
-			public String uid;	
-			public String group;	
-			public String chat;	
-		}
 		public struct ReqLogin
 		{
 			public string id;
 			public String uid;	
+			public String dummy;	
 		}
 		public struct ReqLogout
 		{
@@ -57,6 +51,13 @@ namespace C2S
 			public string id;
 			public String uid;	
 			public String group;	
+		}
+		public struct ReqChat
+		{
+			public string id;
+			public String uid;	
+			public String group;	
+			public String chat;	
 		}
 	}
 }
