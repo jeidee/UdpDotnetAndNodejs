@@ -8,33 +8,33 @@ namespace Icet.Message.Compiler
 {
     class Parser
     {
-        public Protocol Parse(string packet_file)
+        public Protocol Parse(string packetFile)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(packet_file);
+            doc.Load(packetFile);
 
             Protocol protocol = new Protocol();
-            XmlNode protocol_node = doc.SelectSingleNode("/Protocol");
-            protocol.name = protocol_node.Attributes["name"].InnerText;
-            protocol.number = int.Parse(protocol_node.Attributes["number"].InnerText);
-            protocol.version = int.Parse(protocol_node.Attributes["version"].InnerText);
+            XmlNode protocolNode = doc.SelectSingleNode("/Protocol");
+            protocol.name = protocolNode.Attributes["name"].InnerText;
+            protocol.number = int.Parse(protocolNode.Attributes["number"].InnerText);
+            protocol.version = int.Parse(protocolNode.Attributes["version"].InnerText);
 
 
             /// Using
-            XmlNodeList using_list = protocol_node.SelectNodes("Import");
-            foreach (XmlNode node in using_list)
+            XmlNodeList usingList = protocolNode.SelectNodes("Import");
+            foreach (XmlNode node in usingList)
             {
                 Import import = new Import();
                 import.name = node.Attributes["name"].InnerText;
                 import.lang = node.Attributes["lang"].InnerText;
 
-                protocol.import_list.Add(import);
+                protocol.importList.Add(import);
             }
 
 
             /// FLAG
-            XmlNodeList flag_list = protocol_node.SelectNodes("Flag");
-            foreach (XmlNode node in flag_list)
+            XmlNodeList flagList = protocolNode.SelectNodes("Flag");
+            foreach (XmlNode node in flagList)
             {
                 Flag flag = new Flag();
                 flag.name = node.Attributes["name"].InnerText;
@@ -44,45 +44,45 @@ namespace Icet.Message.Compiler
                 else
                     flag.desc = "";
 
-                protocol.flag_list.Add(flag);
+                protocol.flagList.Add(flag);
             }
 
             /// Message
-            XmlNodeList message_list = protocol_node.SelectNodes("Message");
-            UInt32 last_id = 0;
-            foreach (XmlNode node in message_list)
+            XmlNodeList messageList = protocolNode.SelectNodes("Message");
+            UInt32 lastId = 0;
+            foreach (XmlNode node in messageList)
             {
                 Message message = new Message();
                 message.name = node.Attributes["name"].InnerText;
                 if (node.Attributes["id"] == null)
                 {
-                    message.id = ++last_id;
+                    message.id = ++lastId;
                 }
                 else
                 {
                     message.id = UInt32.Parse(node.Attributes["id"].InnerText);
-                    last_id = message.id;
+                    lastId = message.id;
                 }
 
-                XmlNodeList data_list = node.SelectNodes("Data");
-                foreach (XmlNode data_node in data_list)
+                XmlNodeList dataList = node.SelectNodes("Data");
+                foreach (XmlNode dataNode in dataList)
                 {
                     Data data = new Data();
-                    data.type = data_node.Attributes["type"].InnerText;
-                    data.name = data_node.Attributes["name"].InnerText;
-                    if (data_node.Attributes["generic"] != null)
-                        data.generic = data_node.Attributes["generic"].InnerText;
+                    data.type = dataNode.Attributes["type"].InnerText;
+                    data.name = dataNode.Attributes["name"].InnerText;
+                    if (dataNode.Attributes["generic"] != null)
+                        data.generic = dataNode.Attributes["generic"].InnerText;
                     else
                         data.generic = "";
-                    if (data_node.Attributes["desc"] != null)
-                        data.desc = data_node.Attributes["desc"].InnerText;
+                    if (dataNode.Attributes["desc"] != null)
+                        data.desc = dataNode.Attributes["desc"].InnerText;
                     else
                         data.desc = "";
 
-                    message.data_list.Add(data);
+                    message.dataList.Add(data);
                 }
 
-                protocol.message_list.Add(message);
+                protocol.messageList.Add(message);
             }
 
             return protocol;

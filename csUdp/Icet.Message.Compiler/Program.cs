@@ -20,12 +20,12 @@ namespace Icet.Message.Compiler
                 Environment.Exit(0);
             }
 
-            string protocol_file = args[0];
+            string protocolFile = args[0];
             string outpath = args[1];
             string outlang = args[2];
 
             Parser parser = new Parser();
-            Protocol protocol = parser.Parse(protocol_file);
+            Protocol protocol = parser.Parse(protocolFile);
 
             if (outlang == "cs")
             {
