@@ -73,10 +73,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(ProjectDir) cs
-$(ProjectDir)Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(ProjectDir) cs
-$(ProjectDir)Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(ProjectDir) js
-$(ProjectDir)Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(ProjectDir) js</PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(ProjectDir) cs
+
+$(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(ProjectDir) cs
+$(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(SolutionDir)Test.Server.JS\ js
+$(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(SolutionDir)Test.Server.JS\ js</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
