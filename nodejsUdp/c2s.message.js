@@ -1,5 +1,5 @@
-var message = require('./message.js');
-var entity = require('./entity.js');
+var message = require('./odin.message.js');
+var entity = require('./chat.entity.js');
 var moment = require('moment');
 
 
@@ -12,20 +12,10 @@ HeartbeatMessage.prototype.constructor = HeartbeatMessage;
 
 exports.HeartbeatMessage = HeartbeatMessage;
 
-var ReqChatMessage = function() {
-	message.Message.apply(this, arguments);
-	this.uid = undefined;
-	this.group = undefined;
-	this.chat = undefined;
-};
-ReqChatMessage.prototype = new message.Message();
-ReqChatMessage.prototype.constructor = ReqChatMessage;
-
-exports.ReqChatMessage = ReqChatMessage;
-
 var ReqLoginMessage = function() {
 	message.Message.apply(this, arguments);
 	this.uid = undefined;
+	this.dummy = undefined;
 };
 ReqLoginMessage.prototype = new message.Message();
 ReqLoginMessage.prototype.constructor = ReqLoginMessage;
@@ -70,4 +60,15 @@ ReqUserListMessage.prototype = new message.Message();
 ReqUserListMessage.prototype.constructor = ReqUserListMessage;
 
 exports.ReqUserListMessage = ReqUserListMessage;
+
+var ReqChatMessage = function() {
+	message.Message.apply(this, arguments);
+	this.uid = undefined;
+	this.group = undefined;
+	this.chat = undefined;
+};
+ReqChatMessage.prototype = new message.Message();
+ReqChatMessage.prototype.constructor = ReqChatMessage;
+
+exports.ReqChatMessage = ReqChatMessage;
 
