@@ -1,96 +1,98 @@
 var c2smessage = require('./c2s.message.js');
-var entity = require('./entity.js');
+var entity = require('./chat.entity.js');
 var moment = require('moment');
 
 var proxy = function() {
+	this.protocol = undefined;
 };
 
 proxy.prototype = {
-	Heartbeat : function(to_ip, to_port, server, uid) {
+	Heartbeat : function(socket, uid) {
 		try {
-			var send_message = new c2smessage.HeartbeatMessage();
-			send_message.id = "100";
-			send_message.uid = uid;
+			var sendMessage = new c2smessage.HeartbeatMessage();
+			sendMessage.id = "100";
+			sendMessage.uid = uid;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqChat : function(to_ip, to_port, server, uid, group, chat) {
+	ReqLogin : function(socket, uid, dummy) {
 		try {
-			var send_message = new c2smessage.ReqChatMessage();
-			send_message.id = "101";
-			send_message.uid = uid;
-			send_message.group = group;
-			send_message.chat = chat;
+			var sendMessage = new c2smessage.ReqLoginMessage();
+			sendMessage.id = "101";
+			sendMessage.uid = uid;
+			sendMessage.dummy = dummy;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqLogin : function(to_ip, to_port, server, uid) {
+	ReqLogout : function(socket, uid) {
 		try {
-			var send_message = new c2smessage.ReqLoginMessage();
-			send_message.id = "102";
-			send_message.uid = uid;
+			var sendMessage = new c2smessage.ReqLogoutMessage();
+			sendMessage.id = "102";
+			sendMessage.uid = uid;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqLogout : function(to_ip, to_port, server, uid) {
+	ReqJoin : function(socket, uid, group) {
 		try {
-			var send_message = new c2smessage.ReqLogoutMessage();
-			send_message.id = "103";
-			send_message.uid = uid;
+			var sendMessage = new c2smessage.ReqJoinMessage();
+			sendMessage.id = "103";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqJoin : function(to_ip, to_port, server, uid, group) {
+	ReqLeave : function(socket, uid, group) {
 		try {
-			var send_message = new c2smessage.ReqJoinMessage();
-			send_message.id = "104";
-			send_message.uid = uid;
-			send_message.group = group;
+			var sendMessage = new c2smessage.ReqLeaveMessage();
+			sendMessage.id = "104";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqLeave : function(to_ip, to_port, server, uid, group) {
+	ReqUserList : function(socket, uid, group) {
 		try {
-			var send_message = new c2smessage.ReqLeaveMessage();
-			send_message.id = "105";
-			send_message.uid = uid;
-			send_message.group = group;
+			var sendMessage = new c2smessage.ReqUserListMessage();
+			sendMessage.id = "105";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ReqUserList : function(to_ip, to_port, server, uid, group) {
+	ReqChat : function(socket, uid, group, chat) {
 		try {
-			var send_message = new c2smessage.ReqUserListMessage();
-			send_message.id = "106";
-			send_message.uid = uid;
-			send_message.group = group;
+			var sendMessage = new c2smessage.ReqChatMessage();
+			sendMessage.id = "106";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
+			sendMessage.chat = chat;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}

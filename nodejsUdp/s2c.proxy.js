@@ -1,106 +1,135 @@
 var s2cmessage = require('./s2c.message.js');
-var entity = require('./entity.js');
+var entity = require('./chat.entity.js');
 var moment = require('moment');
 
 var proxy = function() {
+	this.protocol = undefined;
 };
 
 proxy.prototype = {
-	ResLogin : function(to_ip, to_port, server, uid, is_ok, error_msg, public_ip, public_port) {
+	ResLogin : function(socket, uid, isOk, errorMessage, publicIp, publicPort, dummy) {
 		try {
-			var send_message = new s2cmessage.ResLoginMessage();
-			send_message.id = "100";
-			send_message.uid = uid;
-			send_message.is_ok = is_ok;
-			send_message.error_msg = error_msg;
-			send_message.public_ip = public_ip;
-			send_message.public_port = public_port;
+			var sendMessage = new s2cmessage.ResLoginMessage();
+			sendMessage.id = "100";
+			sendMessage.uid = uid;
+			sendMessage.isOk = isOk;
+			sendMessage.errorMessage = errorMessage;
+			sendMessage.publicIp = publicIp;
+			sendMessage.publicPort = publicPort;
+			sendMessage.dummy = dummy;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ResLogout : function(to_ip, to_port, server, uid, is_ok, error_msg) {
+	ResLogout : function(socket, uid, isOk, errorMessage) {
 		try {
-			var send_message = new s2cmessage.ResLogoutMessage();
-			send_message.id = "101";
-			send_message.uid = uid;
-			send_message.is_ok = is_ok;
-			send_message.error_msg = error_msg;
+			var sendMessage = new s2cmessage.ResLogoutMessage();
+			sendMessage.id = "101";
+			sendMessage.uid = uid;
+			sendMessage.isOk = isOk;
+			sendMessage.errorMessage = errorMessage;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ResJoin : function(to_ip, to_port, server, uid, is_ok, error_msg) {
+	ResJoin : function(socket, uid, isOk, errorMessage) {
 		try {
-			var send_message = new s2cmessage.ResJoinMessage();
-			send_message.id = "102";
-			send_message.uid = uid;
-			send_message.is_ok = is_ok;
-			send_message.error_msg = error_msg;
+			var sendMessage = new s2cmessage.ResJoinMessage();
+			sendMessage.id = "102";
+			sendMessage.uid = uid;
+			sendMessage.isOk = isOk;
+			sendMessage.errorMessage = errorMessage;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	NotifyJoin : function(to_ip, to_port, server, uid, group, public_ip, public_port) {
+	NotifyJoin : function(socket, uid, group, publicIp, publicPort) {
 		try {
-			var send_message = new s2cmessage.NotifyJoinMessage();
-			send_message.id = "103";
-			send_message.uid = uid;
-			send_message.group = group;
-			send_message.public_ip = public_ip;
-			send_message.public_port = public_port;
+			var sendMessage = new s2cmessage.NotifyJoinMessage();
+			sendMessage.id = "103";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
+			sendMessage.publicIp = publicIp;
+			sendMessage.publicPort = publicPort;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ResLeave : function(to_ip, to_port, server, uid, is_ok, error_msg) {
+	ResLeave : function(socket, uid, isOk, errorMessage) {
 		try {
-			var send_message = new s2cmessage.ResLeaveMessage();
-			send_message.id = "104";
-			send_message.uid = uid;
-			send_message.is_ok = is_ok;
-			send_message.error_msg = error_msg;
+			var sendMessage = new s2cmessage.ResLeaveMessage();
+			sendMessage.id = "104";
+			sendMessage.uid = uid;
+			sendMessage.isOk = isOk;
+			sendMessage.errorMessage = errorMessage;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	NotifyLeave : function(to_ip, to_port, server, uid, group) {
+	NotifyLeave : function(socket, uid, group) {
 		try {
-			var send_message = new s2cmessage.NotifyLeaveMessage();
-			send_message.id = "105";
-			send_message.uid = uid;
-			send_message.group = group;
+			var sendMessage = new s2cmessage.NotifyLeaveMessage();
+			sendMessage.id = "105";
+			sendMessage.uid = uid;
+			sendMessage.group = group;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
 	},
-	ResUserList : function(to_ip, to_port, server, uid, user_list) {
+	ResUserList : function(socket, uid, userList) {
 		try {
-			var send_message = new s2cmessage.ResUserListMessage();
-			send_message.id = "106";
-			send_message.uid = uid;
-			send_message.user_list = user_list;
+			var sendMessage = new s2cmessage.ResUserListMessage();
+			sendMessage.id = "106";
+			sendMessage.uid = uid;
+			sendMessage.userList = userList;
 
-			var send_data = new Buffer(JSON.stringify(send_message));
-			server.send(send_data, 0, send_data.length, to_port, to_ip);
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
+		} catch(e) {
+			console.log(e);
+		}
+	},
+	ResChat : function(socket, uid, isOk, errorMessage) {
+		try {
+			var sendMessage = new s2cmessage.ResChatMessage();
+			sendMessage.id = "107";
+			sendMessage.uid = uid;
+			sendMessage.isOk = isOk;
+			sendMessage.errorMessage = errorMessage;
+
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
+		} catch(e) {
+			console.log(e);
+		}
+	},
+	NotifyChat : function(socket, uid, chat) {
+		try {
+			var sendMessage = new s2cmessage.NotifyChatMessage();
+			sendMessage.id = "108";
+			sendMessage.uid = uid;
+			sendMessage.chat = chat;
+
+			var sendData = new Buffer(JSON.stringify(sendMessage));
+			this.protocol.sendPacket(socket, sendData);
 		} catch(e) {
 			console.log(e);
 		}
