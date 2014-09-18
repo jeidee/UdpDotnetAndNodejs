@@ -1,7 +1,7 @@
 var moment = require('moment');
 var Map = require('./odin.map.js').OdinMap;
 
-var Entity = require('./chat.Entity.js');
+var Entity = require('./chat.entity.js');
 var Stub = require('./c2s.stub.js').stub;
 var Proxy = require('./s2c.proxy.js').proxy;
 
