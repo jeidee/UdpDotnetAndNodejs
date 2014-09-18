@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Protocol name="S2C" number="1" version="100">
   <Import lang="cs" name = "System" />
   <Import lang="cs" name = "System.Collections.Generic" />

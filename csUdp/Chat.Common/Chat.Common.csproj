@@ -75,8 +75,8 @@
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(ProjectDir) cs
     $(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(ProjectDir) cs
-    $(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(SolutionDir)Test.Server.JS\ js
-    $(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(SolutionDir)Test.Server.JS\ js
+    $(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)C2S.xml $(SolutionDir)..\nodejsUdp\ js
+    $(SolutionDir)Icet.Message.compiler\bin\Debug\Icet.Message.Compiler.exe $(ProjectDir)S2C.xml $(SolutionDir)..\nodejsUdp\ js
     </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
