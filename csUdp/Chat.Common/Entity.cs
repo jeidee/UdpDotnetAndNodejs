@@ -9,27 +9,27 @@ namespace Chat.Common
     {
         public string uid;
         public string group;
-        public string public_ip;
-        public ushort public_port;
+        public string publicIp;
+        public ushort publicPort;
     }
 
     public class Group
     {
         public string name;
-        public Dictionary<string, User> user_list = new Dictionary<string, User>();
+        public Dictionary<string, User> userList = new Dictionary<string, User>();
     }
 
     public class Session
     {
         public User user = new User();
         public Group group = new Group();
-        public bool is_login = false;
+        public bool isLogin = false;
 
         public void Clear()
         {
             user = new User();
             group = new Group();
-            is_login = false;
+            isLogin = false;
         }
     }
 }
